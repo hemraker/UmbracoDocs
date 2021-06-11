@@ -8,7 +8,7 @@ In this article you can find information about security on Umbraco Cloud.
 
 ## HTTPS & Certificates
 
-All Umbraco Cloud websites use HTTPS by default. Both the default {projectName}.s1.umbraco.io and custom domains are protected by periodically renewed certificates from Let's Encrypt. This service is offered as part of Umbraco Cloud by [Umbraco LATCH](../Set-Up/Umbraco-Latch).
+All Umbraco Cloud websites use HTTPS by default. Both the default {projectName}.s1.umbraco.io and custom domains are protected by periodically renewed certificates issued by Cloudflare. This service is offered as part of Umbraco Cloud for all plans.
 
 ### Custom Certificates
 
@@ -64,7 +64,11 @@ More information specifically from Microsoft about .Net applications and TLS sup
 
 ### HTTP
 
-HTTP protocol is supported but not used by default on Umbraco Cloud Websites. If you'd like to keep using HTTP, which we strongly discourage, you'll need to remove a web.config transform as specified in [Umbraco LATCH documentation](../Set-Up/Umbraco-Latch)
+HTTP protocol is supported but not used by default on Umbraco Cloud Websites. If you'd like to keep using HTTP, which we strongly discourage, you'll need to remove a web.config transform as specified in [Rewrite rules on Umbraco Cloud](../Manage-Hostnames/Rewrites-on-Cloud/#running-your-site-on-https-only)
+
+### Ports
+
+By default, all ports are closed to secure them against external attacks. This is done for all ports apart from 80 (HTTP) and 443 (HTTPS).
 
 ## Firewall & Restricting public access to Umbraco Cloud resources
 
@@ -100,7 +104,7 @@ The following rule can be added to your web.config file in the `system.webServer
     <action type="AbortRequest"/>
 </rule>
 ```
-For anyone using the 123.123.123.123 IP, this will result in them getting a 502 error. You can, of course, choose your own error.
+For anyone using the 123.123.123.123 IP, this will result in them getting a 502 error. You can choose your own error.
 
 :::note
 You can add additional IPs in the same "pattern" tag by separating them with a | symbol.
@@ -111,6 +115,49 @@ You can add additional IPs in the same "pattern" tag by separating them with a |
 It is possible to restrict who can access the Umbraco backoffice by applying an IP filter. When doing this on an Umbraco Cloud site, there are a few things to pay attention to as the backoffice URL is used in the deployment workflow.
 
 The following rule can be added to your web.config file in the `system.webServer/rewrite/rules/` section.
+
+Please note these two different variations, which differ if you have a reverse proxy like Cloudflare (with Proxying turned on) in front of the website.
+
+:::note
+Since December 8th, 2020 all Umbraco Cloud sites uses Cloudflare for DNS, so new and updated projects should use the Reverse Proxy version.
+
+If you are unsure whether your Cloud project uses Cloudflare or not, get in touch with the friendly support team, and they will help you out.
+:::
+
+**Reverse Proxy version (eg. Cloudflare)**
+
+When using Cloudflare, which is the default setup for all Cloud projects, the project will from behind a reverse proxy get the IPs from the `X-Forwarded-For` header. In this case, which is most cases, use the first variation here to restrict access to your backoffice using IP filtering.
+
+```xml
+<rule name="Backoffice IP Filter" enabled="true">
+    <match url="(^umbraco/backoffice/(.*)|^umbraco($|/$))"/>
+    <conditions logicalGrouping="MatchAll">
+
+        <!-- Umbraco Cloud to Cloud connections should be allowed -->
+        <add input="{HTTP_X_Forwarded_For}" pattern="52.166.147.129" negate="true" />
+        <add input="{HTTP_X_Forwarded_For}" pattern="13.95.93.29" negate="true" />
+        <add input="{HTTP_X_Forwarded_For}" pattern="40.68.36.142" negate="true" />
+        <add input="{HTTP_X_Forwarded_For}" pattern="13.94.247.45" negate="true" />
+        <add input="{HTTP_X_Forwarded_For}" pattern="52.157.96.229" negate="true" />
+
+        <!-- Don't apply rules on localhost so your local environment still works -->
+        <add input="{HTTP_HOST}" pattern="localhost" negate="true" />
+
+        <!-- Allow the  Umbraco Cloud Autoupgrade to access the site -->
+         <add input="{HTTP_X_Forwarded_For}" pattern="52.232.105.169" negate="true" />
+         <add input="{HTTP_X_Forwarded_For}" pattern="52.174.66.30" negate="true" />
+
+        <!-- Add other client IPs that need access to the backoffice -->
+        <add input="{HTTP_X_Forwarded_For}" pattern="123.123.123.123" negate="true" />
+
+    </conditions>
+    <action type="CustomResponse" statusCode="403"/>
+</rule>
+```
+
+**Non-Reverse Proxy (eg. non-Cloudflare)**
+
+When your Cloud project is not using Cloudflare, your site gets the Remote IP address of the website visitor. In this case, you should use the second variation as shown below, when restricting access to your backoffice.
 
 ```xml
 <rule name="Backoffice IP Filter" enabled="true">
@@ -126,14 +173,14 @@ The following rule can be added to your web.config file in the `system.webServer
 
         <!-- Don't apply rules on localhost so your local environment still works -->
         <add input="{HTTP_HOST}" pattern="localhost" negate="true" />
-        
+
         <!-- Allow the  Umbraco Cloud Autoupgrade to access the site -->
          <add input="{REMOTE_ADDR}" pattern="52.232.105.169" negate="true" />
          <add input="{REMOTE_ADDR}" pattern="52.174.66.30" negate="true" />
 
         <!-- Add other client IPs that need access to the backoffice -->
         <add input="{REMOTE_ADDR}" pattern="123.123.123.123" negate="true" />
-       
+
     </conditions>
     <action type="CustomResponse" statusCode="403"/>
 </rule>

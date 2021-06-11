@@ -214,7 +214,7 @@ If your dashboard is unique to your Umbraco installation then you can modify the
 ### Specifying permissions
 You can configure which applications/sections a dashboard will appear in, in the above examples (package.manifest or c#), you can see the alias of the section is used to control where the dashboard is allowed to appear.
 
-Further to this, within this section, you can control which users can see a particular dashboard based upon the *User Groups* they belong to. This is done by setting the 'access' permissions based on the *User Group* alias, you choose to deny or grant a particular User Group's access to the dashboard.
+Further to this, within this section, you can control which users can see a particular dashboard based upon the *User Groups* they belong to. This is done by setting the 'access' permissions based on the *User Group* alias, you choose to deny or grant a particular User Group's access to the dashboard. Each new grant or deny is added in as a new key-value pair in the access permission. Note that the User Group aliases in Umbraco are non-plural (eg. "admin" or editor" instead of "admins" or "editors").
 
 ```json
 {
@@ -226,7 +226,8 @@ Further to this, within this section, you can control which users can see a part
             "weight": -10,
             "access": [
                 { "deny": "translator" },
-                { "grant": "admin" }
+                { "grant": "admin" },
+                { "grant": "editor" }
             ]
         }
     ]
@@ -322,7 +323,7 @@ namespace MyDashboardCustomization
         // override explicit implementation
         IAccessRule[] IDashboard.AccessRules { get; } = new IAccessRule[]
         {
-            new AccessRule {Type = AccessRuleType.Deny, Value = "writer"},
+            new AccessRule {Type = AccessRuleType.Deny, Value = Umbraco.Core.Constants.Security.WriterGroupAlias},
             new AccessRule {Type = AccessRuleType.Grant, Value = Umbraco.Core.Constants.Security.AdminGroupAlias}
         };
     }

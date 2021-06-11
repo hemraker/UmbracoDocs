@@ -9,6 +9,10 @@ As of Umbraco Forms version 8.5.0 it is possible to persist all forms data in th
 In this article you will find instructions on how to migrate your Umbraco Forms data to the database.
 
 :::note
+As of Umbraco Forms version 9.0.0 it is *only* possible to store form data in the database.  As such, if upgrading to Umbraco 9 and using Forms, you should first migrate the forms to the database using Forms 8.
+:::
+
+:::note
 **Custom file system providers**
 
 If [custom file system providers are used on your project for storing Umbraco Forms data](../../../../Extending/FileSystemProviders/#custom-providers), the migration will not be able to run.
@@ -41,3 +45,17 @@ Please be aware that enabling the persisting of Umbraco Forms in the database is
 :::
 
 When you save the file, the site will restart and run a migration step, migrating the files to the Umbraco database.
+
+## Migrating forms in files into a site
+
+If you have a Umbraco 8 site running that stores Forms in the database but you have the forms in file-format, you can force Forms to run the migration of those files again.
+
+First of all, you should ensure that you have enabled the setting that persists forms in the database, as the migration requires this (`StoreUmbracoFormsInDb`). We highly recommend that you test this on a local setup before applying it to your live site.
+
+1. Copy over the Forms, workflows, prevaluesources, and datasource files to the site into `~\App_Data\UmbracoForms\Data`.
+1. Go to the database and find the `[umbracoKeyValue]` table.
+1. Find the forms row and check that the value is `1d084819-84ba-4ac7-b152-2c3d167d22bc` (if not you are not currently working with forms in the database, changing the setting should be enough).
+1. Change that value to `{forms-init-complete}`
+1. Restart the site.
+
+The site will now try to migrate the forms files into the database. In the umbracoTraceLog you can follow the progress. It will throw errors if anything goes wrong and it will log out "The Umbraco Forms DB table {TableName} already exists" for the 4 Forms tables prior to starting the migration.

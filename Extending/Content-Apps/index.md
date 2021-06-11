@@ -1,7 +1,7 @@
 ---
 versionFrom: 8.7.0
-meta.Title: "Content Apps"
-meta.Description: "A guide to Umbraco Content Apps in the backoffice"
+meta.Title: "Content apps"
+meta.Description: "A guide to extending and creating content apps in Umbraco"
 ---
 
 # Content Apps
@@ -74,9 +74,8 @@ Create a new file in the `/App_Plugins/WordCounter/` folder and name it `package
 ```
 
 :::note
-Umbraco backoffice uses the Helveticons icon pack by default 
+Umbraco backoffice uses the Helveticons icon pack by default.
 :::
-
 
 ### Creating the View and the Controller
 
@@ -123,8 +122,7 @@ And in the `.html` file:
 ```csharp
 <div  ng-controller="My.WordCounterApp as vm">
     <umb-box>
-        <umb-box-header
-            title="Amount of words for each property" />
+        <umb-box-header title="Amount of words for each property"></umb-box-header>
         <umb-box-content>
             <div ng-repeat="(key, value) in vm.propertyWordCount">
                 <p>Property: <span style="font-style:italic">{{key}}</span>, amount of words: <span style="font-style:italic">{{value}}</span> </p>
@@ -151,7 +149,11 @@ After the above edits are done, restart your application. Go to any content node
 
 You can set your Content App to only show for specific types by updating your `package.manifest` file and adding a 'show' directive to the Content App definition.
 
-This can be done for both **Content/Media Types**, for **Member types** and for **Content Types** (Document Types) in the Settings section.
+You can show your Content App for **Media Types**, **Member Types**, and  **Document Types** in the **Settings** section.
+
+:::note
+Content Types is referred to as Document Types.  
+:::
 
 Here is an example where all types are taken intro consideration when limiting access to a Content App:
 
@@ -162,11 +164,11 @@ Here is an example where all types are taken intro consideration when limiting a
             "show": [
                 "-content/homePage", // hide for content type 'homePage'
                 "+content/*", // show for all other content types
-                "+media/*", // show for all media types
+                "+media/*", // show for all other media types
                 "-member/premiumMembers", // hide for Member type 'premiumMembers'
                 "+member/*", // show for all other Member types
-                "-contentType/textPage", // hide on Content Type with alias 'textPage'
-                "+contentType/*", // show for all other Content types
+                "-contentType/textPage", // hide for Content Type with alias 'textPage'
+                "-contentType/*", // hide for all other Content types
             ]
         }
     ]
@@ -262,6 +264,10 @@ You will still need to add all of the files you added above but, because your `C
     ]
 }
 ```
+
+:::tip
+You can also have a coloured icon for your Content App by specifying the icon in the format `icon-[name of icon] color-[name of color]`. For eg, an indigo colored icon can be specified for your Content App by specifying the icon as  `"icon-calculator color-indigo"` in your Content App C# class or *package.manifest* .
+:::
 
 ## Notification badges
 

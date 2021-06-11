@@ -6,6 +6,10 @@ versionFrom: 8.7.0
 
 Before reading this document we highly recommend that you familiarise yourself with [the basics of developing a custom Property Editor for Umbraco](https://our.umbraco.com/documentation/Extending/Property-Editors/).
 
+:::note
+[Click here for an overview with a worked example and references back to the relevant documention.](https://umbraco.com/blog/deep-dive-the-block-list-editor/)
+:::
+
 ## Setup your Property Editor as a Block Property Editor
 
 In order for your editor to become a Block Editor you must setup your property editor through C#.
@@ -49,9 +53,9 @@ The Block Editor data structure consists of three main parts:
 
 **Layout**: The Layout defines Blocks that each will reference (by UDI) a content item in the list of data. The Layout object will be key/value pairs where the key is the Property Editor alias and the value type depends on your Property Editor's setup.
 
-**ContentData**: A list of content items based on ElementTypes (IPublishedElement).
+**ContentData**: A list of content items based on `IPublishedElement`Element Types.
 
-**SettingsData**: A list of content items based on ElementTypes (IPublishedElement).
+**SettingsData**: A list of settings items based on `IPublishedElement` Element Types.
 
 In the following example the layout object "MyOwn.UnicornBlocksEditor" is of type Array.
 

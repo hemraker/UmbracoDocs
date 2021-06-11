@@ -2,6 +2,19 @@
 
 This article will provide detailed steps on how to migrate an Umbraco 7 Cloud project to Umbraco 8.
 
+:::warning
+Due to [a known issue](https://github.com/umbraco/Umbraco-CMS/issues/7914), it is currently **not possible to perform a direct migration of your Umbraco 7 Cloud project to the latest Umbraco 8**.
+
+We are working on resolving the issue to make the migration possible again.
+
+As a workaround, you can either
+
+* Migrate to **version 8.5** as a first step, and then post-migration, carry out a normal Umbraco upgrade to the latest version of Umbraco 8, or
+* Install the following community Nuget Package: [ProWorks Umbraco 8 Migrations](https://www.nuget.org/packages/ProWorks.Umbraco8.Migrations) into your V8 project before running the migration (no configuration required). [Learn more about how to use this package on Prowork's blog](https://www.proworks.com/blog/archive/how-to-upgrade-umbraco-version-7-to-version-8).
+
+The package mentioned above patches the migration process so you can migrate directly from the latest Umbraco 7 to the latest Umbraco 8 version without encountering issues. Do note that the package is currently **not tested on Umbraco Cloud**.
+:::
+
 Read the [general article about Content migration](../../../Getting-Started/Setup/Upgrading/migrating-to-v8#limitations) to learn more about limitations and other things that can come into play when migrating your Umbraco site from 7 to 8.
 
 ## Video tutorial
@@ -12,8 +25,8 @@ Read the [general article about Content migration](../../../Getting-Started/Setu
 
 * An Umbraco 7 Cloud project running **the latest version of Umbraco 7**
 
-* Make sure Umbraco Forms data is set to be handled as content
-    * See [Umbraco Forms on Cloud](../../Deployment/Umbraco-Forms-on-Cloud) for more details on how to check the setting
+* Make sure Umbraco Forms data is not handled as content
+    * See [Umbraco Forms on Cloud](../../Deployment/Umbraco-Forms-on-Cloud/#did-you-create-your-project-before-june-2018) for more details on how to check the setting
 
 * A clean Cloud project running the latest version of Umbraco 8 with **at least 2 environments**
 

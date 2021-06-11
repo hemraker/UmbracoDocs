@@ -94,8 +94,11 @@ You can download the latest version of Umbraco from [Our](https://our.umbraco.co
 If you need help upgrading your project, we have some excellent [Upgrade instructions](https://our.umbraco.com/documentation/Getting-Started/Setup/Upgrading/general) you can follow. Be thorough when upgrading, as the latest upgrade might contain breaking changes and/or updated configuration.
 
 :::note
+
 #### Upgrading from a version prior to Umbraco 7.6.0
+
 With Umbraco 7.6.0 the following property editors have been updated to store UDI instead of node ID:
+
 1. Content Picker
 2. Media Picker
 3. Member Picker
@@ -191,7 +194,7 @@ Merging your existing site into the Umbraco Cloud project is a matter of moving 
         * `/App_Data`
     * If your existing site uses Umbraco Forms, make sure you **do not overwrite** the `App_Plugins/UmbracoLicenses/umbracoForms.lic` file
 2. Merge the config files. Pay special attention to the following files:
-    * `/web.config` - in the `web.config` file for the Umbraco Cloud project you will see some new configuration related to Umbraco Deploy, Licenses and Forms. Make sure you **do not overwrite** these when you merge the files
+    * `/web.config` - in the `web.config` file for the Umbraco Cloud project you will see some new configuration related to Umbraco Deploy, Umbraco Identity, Licenses and Forms. Make sure you **do not overwrite** these when you merge the files
     * `/Config/UmbracoDeploy.config` - *only relevant if you are migrating a Cloud project*
 3. Copy the rest of the files in the `/Config` folder from your own project to the Cloud project
 4. If you are using SQL CE
@@ -200,20 +203,19 @@ Merging your existing site into the Umbraco Cloud project is a matter of moving 
 5. If you are using a local SQL server make sure to update the connection string in the `web.config` for the Umbraco Cloud project.
 6. Copy the rest of the files/folders in the `/App_Data` folder from your own project to the Cloud project
 
-The final thing to do before moving on, is to make sure your Umbraco Cloud user will be added to the new database you've merged into the project. First you need to check if any Umbraco user uses the same email address as your Umbraco Cloud account. If this is the case you need to change the email address of the existing user to something else otherwise your Cloud user will be stuck in a inactive state. If you have confirmed there is no user with the same email address you can add the cloud by following these steps.
-
-* Go to the `data/backoffice/users` folder in your Umbraco Cloud project files
-* Rename your user file by removing the leading underscore
-![Update user-file](images/update-user-file.png)
-* Go back to the `data` folder
-* Delete the `deploy-complete` marker
-* Create a new file: `deploy` (with no extension)
-
 That's it! Now that you've merged your existing site with the local clone of the Cloud project, you need to make sure the project runs and verify that
 
-* You can login using your Cloud user
+* You can login using your Umbraco ID user
 * All the content is there
 * All Document Types, Templates, Stylesheets etc,  is in the backoffice
+
+:::note
+Umbraco Identity (Umbraco ID) is the single sign-on (SSO) feature across all Umbraco Cloud services and is required to access any project pages as well as backoffices.
+
+Any users that you might have had on your existing Umbraco site will be migrated over to the local clone of the Cloud project along with the database. These users, however, will not be able to access the Cloud environments of the project or any of the backoffices associated with those environments.
+
+In order for the users to continue having access to the project, they will need to be re-invited either as a [Team Member](../../Set-Up/Team-Members) on a project level or as a [User](../../Set-Up/Users-on-Cloud) to the backoffice of one or more Cloud environments.
+:::
 
 With that confirmed, it's time to prepare to migrate the project to Umbraco Cloud.
 
@@ -265,7 +267,12 @@ Go to the backoffice of your Development environment and make sure all your meta
 2. Go to the backoffice of your local clone of the Umbraco Cloud project
 3. Right-click the top of the Content tree and choose *'Queue for transfer'*
     * **NOTE**: If you have a large amount of content and media you may have the best result in deploying content and media independently
-    * **Media**: If you have more than "a few" media items see our recommendations for working with [media in Umbraco Cloud](../../Set-up/Media/)
+    * **Media**: If you have more than "a few" media items see our recommendations for working with [media in Umbraco Cloud](../../Set-up/Media/).
+
+    :::note
+    Records from the Redirect URL Management are not transferred by deploy.
+    You will need to manually migrate them using SQL.
+    :::
 
 ![Queue for transfer](images/transfer.gif)
 
